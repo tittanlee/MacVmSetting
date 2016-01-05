@@ -17,18 +17,28 @@ Plugin 'vim-scripts/Visual-Mark'
 Plugin 'AdamWhittingham/vim-copy-filename'
 Plugin 'flazz/vim-colorschemes' 
 Plugin 'kien/rainbow_parentheses.vim'
-Plugin 'vim-scripts/cscope-quickfix'
 Plugin 'kien/ctrlp.vim'
+Plugin 'ivalkeen/vim-ctrlp-tjump'
 Plugin 'martinlroth/vim-acpi-asl'
 Plugin 'bling/vim-airline'
+Plugin 'moll/vim-bbye'
+Plugin 'fedorov7/vim-uefi'
 Plugin 'vasconcelloslf/vim-interestingwords'
-Plugin 'fholgado/minibufexpl.vim'
 Plugin 'rking/ag.vim'
 Plugin 'dyng/ctrlsf.vim'
 Plugin 'wesleyche/SrcExpl'
+Plugin 'vim-scripts/vcscommand.vim'
+Plugin 'chrisbra/vim-diff-enhanced'
 Plugin 'godlygeek/csapprox'
+Plugin 'fholgado/minibufexpl.vim'
+"Plugin 'ap/vim-buftabline'
+Plugin 'jlanzarotta/bufexplorer'
 
-"Plugin 'taglist.vim'
+
+Plugin 'vim-scripts/lookupfile'
+Plugin 'vim-scripts/genutils'
+
+
 
 
 " All of your Plugins must be added before the following line
@@ -37,18 +47,27 @@ filetype plugin indent on    " required
 
 
 
-
-
+set noswapfile
 set nocompatible                " be iMproved
 set nu
 set ruler
 set more
-"set mouse=a
-"set mousetime=2000
+set mouse=a
+set mousetime=2000
 set autoindent
 set backspace=2
 set nobackup
 set ic
+
+"Vim useing Unicode setting
+  let $LANG="zh_TW.UTF-8"
+  set langmenu=zh_tw.utf-8
+  language messages zh_CN.utf-8
+  set encoding=utf8
+"reload menu with UTF-8 encoding
+  source $VIMRUNTIME/delmenu.vim
+  source $VIMRUNTIME/menu.vim
+
 
 " set leader to ,
 let mapleader=","
@@ -70,6 +89,9 @@ set nocp
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "=============== Select the color theme ================="
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set t_Co=256
+let g:CSApprox_attr_map = { 'bold' : 'bold', 'italic' : '', 'sp' : '' }
+
 syntax enable
 syntax on
 colorscheme candycode
@@ -97,13 +119,9 @@ autocmd BufReadPost * if line("'\"") && line("'\"") <= line("$") | exe "normal `
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "========= Quickly open vimrc to editing it ============="
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-map <leader>ev :e ~/.vimrc <CR>
-
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"======== Auto reload vimrc when editing it ============="
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-autocmd! bufwritepost .vimrc source ~/.vimrc
+nmap <leader>ev :e ~/.vimrc <CR>
+nmap <leader>sv :source ~/.vimrc <cr>
+"autocmd! bufwritepost .vimrc source ~/.vimrc
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -157,7 +175,7 @@ let g:ctrlp_show_hidden = 1
 let g:ctrlp_max_depth = 40
 
 " Set delay to prevent extra search
-let g:ctrlp_lazy_update = 500
+let g:ctrlp_lazy_update = 1
 
 " 加大 cache 索引的檔案數, 否則會漏找檔案
 let g:ctrlp_max_files = 0
@@ -176,8 +194,8 @@ let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
 
 "设置CtrlP的位置, 默认会把CtrlP放在底部，你也可以设置成top
 "order:ttb 查找文件光标从上到下 order:btt 从下到上
-"let g:ctrlp_match_window = 'buttom,order:btt,min:1,max:10,results:20'
-let g:ctrlp_use_caching = 0
+let g:ctrlp_match_window = 'buttom,order:ttb,min:1,max:10,results:70'
+let g:ctrlp_use_caching = 1
 
 "set wildignore+=*/.git/*,*/.hg/*,*/.svn/*        " Linux/MacOSX
 "let g:ctrlp_custom_ignore = {
@@ -186,6 +204,14 @@ let g:ctrlp_use_caching = 0
 "    \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
 "    \ }
 
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"============== CtrlP TJump plugin config ==============="
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nnoremap <c-]> :CtrlPtjump<cr>
+vnoremap <c-]> :CtrlPtjumpVisual<cr>
+
+let g:ctrlp_tjump_only_silent = 1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "================== Ag plugin config ===================="
@@ -234,7 +260,7 @@ let Tlist_Enable_Fold_Column = 0 " Don't Show the fold indicator column in the t
 let Tlist_Auto_Update = 1
 "let Tlist_WinWidth = 40 "寬度
 "let Tlist_WinHeight = 50 "高度
-nmap t :Tlist<CR>
+"nmap t :Tlist<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "============== rainbow_parentheses.vim ================="
@@ -307,6 +333,13 @@ let NERDTreeShowHidden=1
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"================== Visul-Mark config ==================="
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nmap mn <plug>Vm_goto_next_sign
+nmap mp <Plug>Vm_goto_prev_sign
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "================ NERD_commenter config ================="
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 map cx <plug>NERDCommenterUncomment
@@ -373,17 +406,25 @@ nmap sv :vsplit<CR>
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"====================== Folding ========================="
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nmap F v%zfzz
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "============= Air line plugin setting ==================" 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " set status line
 set laststatus=2
+let g:airline_powerline_fonts=1 
 let g:airline_theme='wombat'
-let g:airline_section_b = '%{getcwd()}\'
-let g:airline_section_c = '%f'
+let g:airline_section_b = '%{getcwd()}'
+let g:airline_section_c = '%F'
+let g:airline#extensions#whitespace#enabled = 0
 
-"set showtabline=2 
 
 " enable tabline
+"set showtabline=2 
 "let g:airline#extensions#tabline#enabled = 1
 
 " set left separator
@@ -426,9 +467,68 @@ let g:SrcExpl_searchLocalDef = 0
 " // Do not let the Source Explorer update the tags file when opening 
 let g:SrcExpl_isUpdateTags = 0 
 
+" // In order to avoid conflicts, the Source Explorer should know what plugins "
+" // except itself are using buffers. And you need add their buffer names into "
+" // below listaccording to the command ":buffers!"                            "
+ let g:SrcExpl_pluginList = [
+         \ "_NERD_tree_",
+         \ "-MiniBufExplorer-",
+         \ "__Tagbar__"
+     \ ]
 
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"============== vcscommand plugin setting ===============" 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nmap <leader>svnd <Plug>VCSVimDiff
+nmap <leader>svns <Plug>VCSStatus
+nmap <leader>svnr <Plug>VCSRevert
+nmap <leader>svnl <Plug>VCSLog
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"=============== Cscope plugin setting =================="
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+if has("cscope")
+  set csprg=cscope
+  set csto=1
+  set cst
+  set cscopequickfix=s-,c-,d-,i-,t-,e-
+  set cspc=3
+  set nocsverb
+  " add any database in current directory
+  if filereadable("cscope.out")
+    cs add cscope.out
+  endif
+  set csverb
+endif
+
+" s: Find this C symbol
+" g: Find this definition
+" c: Find functions calling this function
+" t: Find this text string
+" e: Find this egrep pattern
+" f: Find this file
+" i: Find files #including this file
+" d: Find functions called by this function
+nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"============= bufexplorer plugin setting ==============="
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" New split window is n columns wide.
+let g:bufExplorerVertSize=40
+
+" Split right.
+let g:bufExplorerSplitRight=1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "======== Statusline Always hide the statusline ========="
