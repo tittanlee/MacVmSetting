@@ -19,10 +19,11 @@ Plugin 'flazz/vim-colorschemes'
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'kien/ctrlp.vim'
 Plugin 'ivalkeen/vim-ctrlp-tjump'
-Plugin 'martinlroth/vim-acpi-asl'
+"Plugin 'martinlroth/vim-acpi-asl'
 Plugin 'bling/vim-airline'
-Plugin 'moll/vim-bbye'
-Plugin 'fedorov7/vim-uefi'
+Plugin 'vim-airline/vim-airline-themes'
+"Plugin 'moll/vim-bbye'
+"Plugin 'fedorov7/vim-uefi'
 Plugin 'vasconcelloslf/vim-interestingwords'
 Plugin 'rking/ag.vim'
 Plugin 'dyng/ctrlsf.vim'
@@ -30,15 +31,15 @@ Plugin 'wesleyche/SrcExpl'
 Plugin 'vim-scripts/vcscommand.vim'
 Plugin 'chrisbra/vim-diff-enhanced'
 Plugin 'godlygeek/csapprox'
-Plugin 'fholgado/minibufexpl.vim'
+"Plugin 'fholgado/minibufexpl.vim'
 "Plugin 'ap/vim-buftabline'
 Plugin 'jlanzarotta/bufexplorer'
+Plugin 'maxbrunsfeld/vim-yankstack'
+Plugin 'ronakg/quickr-cscope.vim'
+Plugin 'Yggdroot/indentLine'
+Plugin 'vim-scripts/a.vim'
 
-
-Plugin 'vim-scripts/lookupfile'
 Plugin 'vim-scripts/genutils'
-
-
 
 
 " All of your Plugins must be added before the following line
@@ -49,7 +50,8 @@ filetype plugin indent on    " required
 
 set noswapfile
 set nocompatible                " be iMproved
-set nu
+set number
+"set relativenumber
 set ruler
 set more
 set mouse=a
@@ -58,11 +60,12 @@ set autoindent
 set backspace=2
 set nobackup
 set ic
+set ffs=mac,unix,dos ff=unix
 
 "Vim useing Unicode setting
   let $LANG="zh_TW.UTF-8"
   set langmenu=zh_tw.utf-8
-  language messages zh_CN.utf-8
+  "language messages zh_tw.utf-8
   set encoding=utf8
 "reload menu with UTF-8 encoding
   source $VIMRUNTIME/delmenu.vim
@@ -85,6 +88,17 @@ set showmode            " Show current mode
 
 set nocp
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"================== Yank to clipboard ====================
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if has("clipboard")
+  set clipboard=unnamed " copy to the system clipboard
+
+  if has("unnamedplus") " X11 support
+    set clipboard+=unnamedplus
+  endif
+endif
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "=============== Select the color theme ================="
@@ -94,12 +108,12 @@ let g:CSApprox_attr_map = { 'bold' : 'bold', 'italic' : '', 'sp' : '' }
 
 syntax enable
 syntax on
-colorscheme candycode
-
+colorscheme wombat
 
 "" Line highlight 設此是游標整行會標註顏色
 "set cursorline 
 "hi CursorLine   cterm=NONE ctermbg=darkgrey ctermfg=white guibg=darkred guifg=white
+highlight Scrollbar ctermfg=NONE ctermbg=darkred ctermfg=white guibg=lightblue guifg=blue
 
 augroup CursorLine
   au!
@@ -133,11 +147,12 @@ nmap <leader>sv :source ~/.vimrc <cr>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "====================== tab 鍵設定======================="
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set softtabstop=2
-set tabstop=2
-set shiftwidth=2
-set expandtab
-
+set tabstop=4       " 设定 tab 长度为4  
+set shiftwidth=4    " 缩进的空格数  
+set expandtab       " 是否在缩进和遇到Tab键时使用空格代替；使用noexpandtab取消设置  
+set autoindent      " 自动缩进  
+set smartindent  
+set cindent         " Automatically adjust the indented length  
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "================= 找到關鍵字會亮起來 ==================="
@@ -189,7 +204,7 @@ let g:ctrlp_by_filename = 1
 "let g:ctrlp_user_command = 'find %s -type f'        " MacOSX/Linux
 "let g:ctrlp_user_command = 'dir %s /-n /b /s /a-d'  " Windows
 "let g:ctrlp_user_command = 'ag  %s -l -i --nocolor --nogroup -G cscope.files -g ""'
-let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
+let g:ctrlp_user_command = 'ag %s -l --ignore .gitignore --ignore .git --ignore tags --ignore cscope.files --ignore cscope.out --ignore Output -g ""'
 
 
 "设置CtrlP的位置, 默认会把CtrlP放在底部，你也可以设置成top
@@ -197,27 +212,39 @@ let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
 let g:ctrlp_match_window = 'buttom,order:ttb,min:1,max:10,results:70'
 let g:ctrlp_use_caching = 1
 
-"set wildignore+=*/.git/*,*/.hg/*,*/.svn/*        " Linux/MacOSX
+"set wildignore+=.git/*,*/.hg/*,*/.svn/*        " Linux/MacOSX
 "let g:ctrlp_custom_ignore = {
-"    \ 'dir':  '\v[\/]\.(git|hg|svn)$',
+    "\ 'dir':  '\v[\/]\.(git|hg|svn)$',
 "    \ 'file': '\v\.(exe|so|dll)$',
 "    \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
-"    \ }
+    "\ }
+
+
+let g:ctrlp_extensions = ['tag', 'buffertag', 'quickfix', 'dir', 'rtscript',
+                          \ 'undo', 'line', 'changes', 'mixed', 'bookmarkdir']
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "============== CtrlP TJump plugin config ==============="
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-nnoremap <c-]> :CtrlPtjump<cr>
-vnoremap <c-]> :CtrlPtjumpVisual<cr>
+"nnoremap <c-]> :CtrlPtjump<cr>
+"vnoremap <c-]> :CtrlPtjumpVisual<cr>
 
-let g:ctrlp_tjump_only_silent = 1
+nmap <leader>j :CtrlPtjump<cr>
+vmap <leader>j :CtrlPtjumpVisual<cr>
+
+
+"let g:ctrlp_tjump_only_silent = 1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "================== Ag plugin config ===================="
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 nmap <leader>ag :Ag
-let g:ag_prg="ag -C 2 --vimgrep --smart-case"
+let g:ag_prg="ag --vimgrep
+      \ --ignore cscope.files
+      \ --ignore cscope.out
+      \ --ignore tags"
+
 let g:ag_working_path_mode='r'
 let g:ag_highlight=1
 
@@ -226,6 +253,7 @@ let g:ag_highlight=1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "================ CagtrlSF plugin config =================="
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nmap     <leader>sfq <Plug>CtrlSFQuickfixPrompt
 nmap     <leader>sf <Plug>CtrlSFPrompt
 vmap     <leader>sf <Plug>CtrlSFVwordPath
 vmap     <leader>sF <Plug>CtrlSFVwordExec
@@ -235,15 +263,20 @@ nnoremap <leader>so :CtrlSFOpen<CR>
 nnoremap <leader>st :CtrlSFToggle<CR>
 inoremap <leader>st <Esc>:CtrlSFToggle<CR>
 
-let g:ctrlsf_ackprg = '/usr/local/bin/ag'
+let g:ctrlsf_ackprg = '/usr/bin/ag'
+"let g:ctrlsf_case_sensitive = 'yes'
+let g:ctrlsf_context = '-B 5 -A 3'
+let g:ctrlsf_ignore_dir = ['Build', '.git', 'cscope.files', 'cscope.out', 'tags']
 
-let g:ctrlsf_context = '-C 2'
-let g:ctrlsf_position = 'bottom'
 let g:ctrlsf_mapping = {
       \ "next": "n",
       \ "prev": "N",
       \ }
 
+let g:ctrlsf_auto_close = 0
+let g:ctrlsf_debug_mode = 0
+let g:ctrlsf_winsize = '30%'
+"let g:ctrlsf_position = 'bottom'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "================== Tags List config ===================="
@@ -299,12 +332,16 @@ au Syntax * RainbowParenthesesLoadBraces
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:tagbar_left = 1
 let g:tagbar_autofocus = 0
+let g:tagbar_foldlevel = 2
 nmap t :TagbarToggle<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "================== NERDtree config ========================"
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-nmap nt :NERDTreeToggle<CR>
+nmap <ESC>w :NERDTreeToggle<CR>
+nmap <ESC>d :NERDTree %:h  <CR>
+"nmap <ESC>n :NERDTreeToggle<CR>
+
 
 let NERDTreeWinPos = "right"
 " 控制当光标移动超过一定距离时，是否自动将焦点调整到屏中心
@@ -320,7 +357,7 @@ let NERDTreeAutoCenter = 1
 let NERDTreeShowFiles=1
 
 " " 是否默认显示隐藏文件
-let NERDTreeShowHidden=1
+"let NERDTreeShowHidden=1
 
 " " 是否默认显示行号
 "let NERDTreeShowLineNumbers=1
@@ -331,12 +368,13 @@ let NERDTreeShowHidden=1
 " " 窗口宽
 " let NERDTreeWinSize=31
 
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "================== Visul-Mark config ==================="
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nmap mm <Plug>Vm_toggle_sign
 nmap mn <plug>Vm_goto_next_sign
 nmap mp <Plug>Vm_goto_prev_sign
+nmap mf :sign unplace * <CR>
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -345,35 +383,35 @@ nmap mp <Plug>Vm_goto_prev_sign
 map cx <plug>NERDCommenterUncomment
 map cc <plug>NERDCommenterComment
 map cb <plug>NERDCommenterAlignBoth
-
+let NERD_c_alt_style=1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "=================== MiniBufExplorer ===================="
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:miniBufExplMapCTabSwitchBufs = 1
-let g:miniBufExplModSelTarget = 1
-let g:miniBufExplorerMoreThanOne = 0
-let g:miniBufExplModSelTarget = 0
-let g:miniBufExplShowBufNumbers = 0
-let g:miniBufExplCycleArround = 1
-let g:miniBufExplForceSyntaxEnable = 1
-let g:miniBufExplUseSingleClick = 1
+"let g:miniBufExplMapCTabSwitchBufs = 1
+"let g:miniBufExplModSelTarget = 1
+"let g:miniBufExplorerMoreThanOne = 0
+"let g:miniBufExplModSelTarget = 0
+"let g:miniBufExplShowBufNumbers = 0
+"let g:miniBufExplCycleArround = 1
+"let g:miniBufExplForceSyntaxEnable = 1
+"let g:miniBufExplUseSingleClick = 1
 "let g:miniBufExplVSplit = 25
 "let g:miniBufExplSplitBelow=1
 
 " MiniBufExpl Colors
-hi MBENormal               guifg=#808080 guibg=fg
-hi MBEChanged              guifg=#CD5907 guibg=fg
-hi MBEVisibleNormal        guifg=#5DC2D6 guibg=fg
-hi MBEVisibleChanged       guifg=#F1266F guibg=fg
-hi MBEVisibleActiveNormal  guifg=#A6DB29 guibg=fg
-hi MBEVisibleActiveChanged guifg=#F1266F guibg=fg
+"hi MBENormal               guifg=#808080 guibg=fg
+"hi MBEChanged              guifg=#CD5907 guibg=fg
+"hi MBEVisibleNormal        guifg=#5DC2D6 guibg=fg
+"hi MBEVisibleChanged       guifg=#F1266F guibg=fg
+"hi MBEVisibleActiveNormal  guifg=#A6DB29 guibg=fg
+"hi MBEVisibleActiveChanged guifg=#F1266F guibg=fg
 "let g:did_minibufexplorer_syntax_inits = 1
 
 "autocmd BufRead,BufNew,BufWritePost :call UMiniBufExplorer
 
 "Close buffer tab
-nmap <C-c> :MBEbd<CR>
+"nmap <C-c> :MBEbd<CR>
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -424,8 +462,11 @@ let g:airline#extensions#whitespace#enabled = 0
 
 
 " enable tabline
-"set showtabline=2 
-"let g:airline#extensions#tabline#enabled = 1
+set showtabline=2 
+let g:airline#extensions#tabline#enabled = 1
+
+let g:airline#extensions#tabline#formatter = 'default'
+let g:airline#extensions#tabline#fnamemod = ':t'
 
 " set left separator
 "let g:airline#extensions#tabline#left_sep = ' '
@@ -436,16 +477,27 @@ let g:airline#extensions#whitespace#enabled = 0
 " show buffer number
 "let g:airline#extensions#tabline#buffer_nr_show = 1
 
+"* configure whether close button should be shown: >
+let g:airline#extensions#tabline#show_close_button = 1
+
+"* configure symbol used to represent close button >
+let g:airline#extensions#tabline#close_symbol = 'X'
+
+
 " Bug fixed - Tabline loses color after "sourcing" vimrc
 "autocmd! BufWritePost .vimrc,_vimrc,vimrc source $MYVIMRC | AirlineRefresh
 
+"nmap <ESC>[1;9C :bp <cr>
+"nmap <ESC>[1;9D :bn <cr>
+"nmap <C-c> :bd <cr>
+nnoremap <C-c> :bp\|bd #<CR>
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "============== SrcExpl plugin setting ==================" 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " // The switch of the Source Explorer. Key : Alt + c
-nmap <ESC>altc :SrcExplToggle<CR> 
+nmap <ESC>c :bo SrcExplToggle<CR> 
 
 " // Set the height of Source Explorer window 
 let g:SrcExpl_winHeight = 6
@@ -472,36 +524,37 @@ let g:SrcExpl_isUpdateTags = 0
 " // below listaccording to the command ":buffers!"                            "
  let g:SrcExpl_pluginList = [
          \ "_NERD_tree_",
-         \ "-MiniBufExplorer-",
-         \ "__Tagbar__"
-     \ ]
+         \ "__Tagbar__",
+         \ "ControlP",
+         \ ]
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "============== vcscommand plugin setting ===============" 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 nmap <leader>svnd <Plug>VCSVimDiff
 nmap <leader>svns <Plug>VCSStatus
 nmap <leader>svnr <Plug>VCSRevert
 nmap <leader>svnl <Plug>VCSLog
 
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "=============== Cscope plugin setting =================="
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-if has("cscope")
-  set csprg=cscope
-  set csto=1
-  set cst
-  set cscopequickfix=s-,c-,d-,i-,t-,e-
-  set cspc=3
-  set nocsverb
-  " add any database in current directory
-  if filereadable("cscope.out")
-    cs add cscope.out
-  endif
-  set csverb
-endif
+"if has("cscope")
+"  set csprg=cscope
+"  set csto=1
+"  set cst
+"  set cscopequickfix=s-,c-,d-,i-,t-,e-
+"  set cspc=3
+"  set nocsverb
+"  " add any database in current directory
+"  if filereadable("cscope.out")
+"    cs add cscope.out
+"  endif
+"  set csverb
+"endif
 
 " s: Find this C symbol
 " g: Find this definition
@@ -511,15 +564,26 @@ endif
 " f: Find this file
 " i: Find files #including this file
 " d: Find functions called by this function
-nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
-nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
-nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
-nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+"nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+"nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+"nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
 
+let g:quickr_cscope_use_qf_g = 1
+let g:quickr_cscope_keymaps = 0
+let g:quickr_cscope_prompt_length = 1
+nmap <C-\>s <plug>(quickr_cscope_symbols)
+nmap <C-\>g <plug>(quickr_cscope_global)
+nmap <C-\>c <plug>(quickr_cscope_callers)
+nmap <C-\>f <plug>(quickr_cscope_files)
+nmap <C-\>i <plug>(quickr_cscope_includes)
+nmap <C-\>t <plug>(quickr_cscope_text)
+nmap <C-\>e <plug>(quickr_cscope_egrep)
+nmap <C-\>d <plug>(quickr_cscope_functions)
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "============= bufexplorer plugin setting ==============="
@@ -529,6 +593,19 @@ let g:bufExplorerVertSize=40
 
 " Split right.
 let g:bufExplorerSplitRight=1
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"================= IndentLine plugin =====================
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"let g:indentLine_showFirstIndentLevel = 1
+
+let g:indentLine_concealcursor = 'inc'
+"let g:indentLine_conceallevel = 1
+
+nmap <leader>ls :LeadingSpaceToggle<CR>
+nmap <Leader>lt :IndentLinesToggle<CR>
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "======== Statusline Always hide the statusline ========="
@@ -540,18 +617,18 @@ let g:bufExplorerSplitRight=1
 "set statusline+=%=%-10.(%l,%c%V%)\ %p%%/%L
 "set statusline=%F\ %h%1*%m%r%w%0*[%{strlen(&filetype)?&filetype:'none'},%{&encoding},%{&fileformat}]%=%-14.(%l,%c%V%)\ %<%p%%\ \ \ [%L]\ \ \ %{strftime('%y-%m-%d\ %A')}
 
-function! CurDir()
-  let curdir = substitute(getcwd(), $HOME, "~", "")
-  return curdir
-endfunction
+"function! CurDir()
+"  let curdir = substitute(getcwd(), $HOME, "~", "")
+"  return curdir
+"endfunction
 
-function! HasPaste()
-  if &paste
-    return '[PASTE]'
-  else
-    return ''
-  endif
-endfunction
+"function! HasPaste()
+"  if &paste
+"    return '[PASTE]'
+"  else
+"    return ''
+"  endif
+"endfunction
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -590,16 +667,23 @@ nmap <silent> <C-right> :wincmd l<CR>
 "================== ALT 鍵 + 上下左右 =================="
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "Right
-nmap <ESC>[1;9C :MBEbn<CR>  
+nmap <ESC>[1;9C :bn<CR>  
 
 "Left
-nmap <ESC>[1;9D :MBEbp<CR>  
+nmap <ESC>[1;9D :bp<CR>  
 
 "Up
 nmap <ESC>[1;9A :copen<CR>  
 
 "Down
 nmap <ESC>[1;9B :cclose<CR>
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"==================== Key define ========================"
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nmap [[ [[zz
+nmap ]] ]]zz
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -641,6 +725,7 @@ omap <F4> <Esc> :q!<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "======================= F5 key ========================="
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:alternateSearchPath = 'sfr:./inc'
 nmap <F5> :A<CR>
 cmap <F5> <Esc> :A<CR>
 imap <F5> <Esc> :A<CR>
@@ -684,11 +769,11 @@ omap <F7> <Esc> :set hls!<BAR>set hls?<CR>
 "vmap <F9> <Esc> :%!xxd<CR>
 "omap <F9> <Esc> :%!xxd<CR>
 
-nmap <F9> :!runfw<CR>
-cmap <F9> <ESC> :!runfw<CR>
-imap <F9> <ESC> :!runfw<CR>
-vmap <F9> <ESC> :!runfw<CR>
-omap <F9> <ESC> :!runfw<CR>
+nmap <F9> :TagbarToggle<cr> :NERDTreeToggle<cr>
+cmap <F9> <ESC> :TagbarToggle<cr> :NERDTreeToggle<cr>
+imap <F9> <ESC> :TagbarToggle<cr> :NERDTreeToggle<cr>
+vmap <F9> <ESC> :TagbarToggle<cr> :NERDTreeToggle<cr>
+omap <F9> <ESC> :TagbarToggle<cr> :NERDTreeToggle<cr>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "====================== F10 key ========================="
@@ -711,9 +796,29 @@ omap <F11> <Esc> :set ic!<BAR>set noic?<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "====================== F12 key ========================="
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-nmap <F12> :%s= *$==<cr>
-cmap <F12> <Esc> :%s= *$==<cr>
-imap <F12> <Esc> :%s= *$==<cr>
-vmap <F12> <Esc> :%s= *$==<cr>
-omap <F12> <Esc> :%s= *$==<cr>
+set listchars=tab:\|\ 
+nmap <F12> :set list!<BAR>set list?<CR>
+
+
+" Remove tail space char
+"nmap <F12> :%s= *$==<cr>
+"cmap <F12> <Esc> :%s= *$==<cr>
+"imap <F12> <Esc> :%s= *$==<cr>
+"vmap <F12> <Esc> :%s= *$==<cr>
+"omap <F12> <Esc> :%s= *$==<cr>
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"================= ctags & cscope command ==============="
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"ctcs='rm -rf tags cscope.* cscope*; \
+"      ag -l --search-binary --ignore-dir Output . > cscope.files; \
+"      cp cscope.files cscope.tag; \
+"      ctags -R --exclude=Output --sort=foldcase --C-kinds=+lpx --C++-kinds=+p --fields=+iaS --extra=+q -L cscope.tag; \
+"      rm -rf sed* cscope.tag; \
+"      cscope -bk -i cscope.files'
+
+
+
+
 
